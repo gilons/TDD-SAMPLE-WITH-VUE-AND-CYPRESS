@@ -3,29 +3,52 @@
     <div class="todo-title">My Todo App</div>
     <div class="todo-header">
       <div class="todo-input-container">
-    <input class="todo-input" id="add-todo" @keyup.enter="addTask" v-model="newTodo" />
+        <input
+          class="todo-input"
+          id="add-todo"
+          @keyup.enter="addTask"
+          v-model="newTodo"
+        />
       </div>
       <div class="todo-button-container">
-    <button class="todo-button" id="add-todo-button" @click="addTodo">{{updating?"Edit Todo":"Add Todo"}}</button>
+        <button class="todo-button" id="add-todo-button" @click="addTodo">
+          {{ updating ? "Edit Todo" : "Add Todo" }}
+        </button>
       </div>
     </div>
     <div class="todo-list">
-      <div class="todo-list-item" @click="markAsDone" :key="task.id" v-for="task in tasks">
-       <div class="todo"> {{ task.text }}</div>
-         <div class="todo-actions">
-        <select
-          @change="changeState($event, task.id)"
-          name="task-status"
-          v-model="task.current_state"
-          class="state-select button"
-        >
-          <option v-for="option in options" :key="option.value">{{
-            option.text
-          }}</option>
-        </select>
-        <button class="button edit-todo" @click="editTodo(task.id)">Edit</button>
-        <button class="button delete-todo" @click="removeTodo(task.id)">Delete</button>
-         </div>
+      <div
+        class="todo-list-item"
+        @click="markAsDone"
+        :style="{backgroundColor: task.current_state == 'DONE' ? 'yellowgreen' : task.current_state == 'TODO'?'#9BAFE7':''}"
+        :key="task.id"
+        v-for="task in tasks.sort((a, b) =>
+          a.current_state > b.current_state
+            ? 1
+            : a.current_state < b.current_state
+            ? -1
+            : 0
+        )"
+      >
+        <div class="todo">{{ task.text }}</div>
+        <div class="todo-actions">
+          <select
+            @change="changeState($event, task.id)"
+            name="task-status"
+            v-model="task.current_state"
+            class="state-select button"
+          >
+            <option v-for="option in options" :key="option.value">
+              {{ option.text }}
+            </option>
+          </select>
+          <button class="button edit-todo" @click="editTodo(task.id)">
+            Edit
+          </button>
+          <button class="button delete-todo" @click="removeTodo(task.id)">
+            Delete
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -82,16 +105,22 @@ export default {
       });
     },
     addTodo() {
-      this.updating
-        ? (this.tasks = this.tasks.map((ele) => {
-            return ele.id == this.currentTodoID
-              ? { ...ele, text: this.todo }
-              : ele;
-          }))
-        : this.tasks.push({ id: Math.random().toString(), text: this.todo,current_state:'TODO' });
+      this.todo
+        ? this.updating
+          ? (this.tasks = this.tasks.map((ele) => {
+              return ele.id == this.currentTodoID
+                ? { ...ele, text: this.todo }
+                : ele;
+            }))
+          : this.tasks.push({
+              id: Math.random().toString(),
+              text: this.todo,
+              current_state: "TODO",
+            })
+        : null;
       this.todo = "";
-      this.currentTodoID = null 
-      this.updating = false
+      this.currentTodoID = null;
+      this.updating = false;
     },
     removeTodo(id) {
       this.tasks = this.tasks.filter((ele) => ele.id !== id);
@@ -118,13 +147,13 @@ export default {
   .hello-image {
     border: 5px solid orangered;
   }
-  .todo-header{
+  .todo-header {
     width: 90%;
     height: 100px;
     display: flex;
     justify-content: space-between;
   }
-  .button{
+  .button {
     height: 30px;
     margin: auto;
     font-weight: 600;
@@ -133,40 +162,40 @@ export default {
     border: none;
     border-radius: 5px;
   }
-  .edit-todo{
+  .edit-todo {
     background: green;
   }
-  .delete-todo{
+  .delete-todo {
     background-color: red;
   }
-  .state-select{
+  .state-select {
     background: orange;
   }
-  .todo-input-container{
+  .todo-input-container {
     width: 80%;
     height: 30px;
   }
-  .todo-title{
+  .todo-title {
     font-weight: 600;
     font-size: 20px;
     height: 60px;
     margin-top: 10px;
   }
-  .todo-actions{
+  .todo-actions {
     width: 40%;
     display: flex;
     justify-content: space-between;
   }
-  .todo-input{
+  .todo-input {
     width: 100%;
     height: 100%;
     border-radius: 5px;
     padding-left: 10px;
     border-width: 1px;
-    border-color:skyblue;
+    border-color: skyblue;
     border-style: solid;
   }
-  .todo-button{
+  .todo-button {
     height: 100%;
     width: 100%;
     border: none;
@@ -176,33 +205,34 @@ export default {
     font-weight: 600;
     color: #fff;
   }
-  .todo-button-container{
+  .todo-button-container {
     height: 30px;
     width: 100px;
   }
-  .todo-list-item{
+  .todo-list-item {
     cursor: pointer;
-    background: ivory;
+    background: rgb(255, 255, 240);
     height: 50px;
     padding: 10px;
+    border-radius: 5px;
     margin: auto;
     display: flex;
     justify-content: space-between;
     width: 80%;
   }
-  .todo{
+  .todo {
     align-self: flex-start;
     margin: auto;
-    width:60%
+    width: 60%;
   }
-  .todo-list{
+  .todo-list {
     margin: 10px;
     display: flex;
     flex-direction: column;
     min-height: 100px;
     justify-content: space-between;
     width: 90%;
-    overflow: scroll;
+    overflow: hidden;
     max-height: 60vh;
   }
 }
